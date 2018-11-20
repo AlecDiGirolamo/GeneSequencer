@@ -1,6 +1,9 @@
-main.o: main.cpp GeneSequencer.hpp Chromosome.hpp Gene.hpp Allele.hpp
+main.o: main.cpp GeneSequencer.hpp ChromosomePair.hpp Chromosome.hpp \
+ Gene.hpp Allele.hpp
 
 GeneSequencer.hpp:
+
+ChromosomePair.hpp:
 
 Chromosome.hpp:
 

@@ -6,19 +6,22 @@
 class Chromosome
 {
   private:
-	int number;
 	std::vector<Gene> genes;
+	void InputFromFile(std::ifstream &file);
+	void InputManually(std::ifstream &file);
+	int ChooseGene();
+	bool CheckIntAnswer(std::string answer, unsigned int &assignInt);
 
   public:
 	Chromosome();
-	Chromosome(int inputNumber);
+	Chromosome(std::ifstream &file);
+
+	std::vector<Gene> GetGenes();
 
 	void AnalyzeGenotype();
-	void InputFromFile(std::ifstream &file);
-	void OutputToFile(std::ofstream &file);
 	void AddGene(Gene inputGene);
-	int GetNumber();
-	Gene FindGene(std::string name);
-	Chromosome operator+(Chromosome inputChromosome);
+
+	void ExportGene(std::ofstream &file, int level);
+	void WriteToFile(std::ofstream &file);
 	bool RunUnitTest();
 };

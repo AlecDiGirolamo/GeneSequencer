@@ -4,134 +4,147 @@
 
 using namespace std;
 
-Allele GeneSequencer::GetAllele(string alleleNumber)
+bool GeneSequencer::CheckIntAnswer(string answer, unsigned int &assignInt)
 {
-	string variant;
-	string type;
-	string sequence;
-	cout << "What is the " << alleleNumber << " variant?" << endl;
-	getline(cin, variant);
-	cout << "What is the " << alleleNumber << " type?(dominant or recessive)" << endl;
-	getline(cin, type);
-	while (true)
+	for (unsigned int i = 0; i < answer.size(); i++)
 	{
-		if (type != "dominant" && type != "recessive")
+		if (answer.at(i) <= '0' || answer.at(i) >= '9')
 		{
-			cout << "Please choose either dominant or recessive" << endl;
-			getline(cin, type);
-		}
-		else
-		{
-			break;
+			return false;
 		}
 	}
-	cout << "What is the " << alleleNumber << " nucleotide sequence?" << endl;
-	getline(cin, sequence);
-	return Allele(sequence, variant, type);
+	assignInt = stoi(answer);
+	return true;
 }
 
-int GeneSequencer::ChooseChromosome()
+int GeneSequencer::ChooseChromosomePair()
 {
-
-	cout << "Please choose a chromosome" << endl;
-	AnalyzeChromosome();
-	if (chromosomes.size() > 0)
+	if (chromosomePairs.size() > 0)
 	{
-		string userChoice;
-		getline(cin, userChoice);
-		while (true)
-		{
-			if (int intUserChoice = stoi(userChoice))
-			{
-				if (intUserChoice < 1 || intUserChoice > chromosomes.size())
-				{
-					cout << "There are no chromosomes with that number." << endl;
-				}
-				else
-				{
-					return intUserChoice - 1;
-				}
-			}
-			else
-			{
-				cout << "Please enter an integer." << endl;
-			}
-		}
-	}
-}
-
-void GeneSequencer::AnalyzeChromosome()
-{
-	// ask about chromosome storage
-	if (chromosomes.size() < 0)
-	{
-		cout << "There are currently no chromosomes saved." << endl;
+		AnalyzeChromosomePairs();
 	}
 	else
 	{
-		for (unsigned int i = 0; i < chromosomes.size(); i++)
-		{
-			cout << "Chromosome " << chromosomes.at(i).GetNumber() << ": " << endl;
-			chromosomes.at(i).AnalyzeGenotype();
-			cout << endl;
-		}
+		return -1;
 	}
-};
-
-void GeneSequencer::CreateChromosome()
-{
-	Chromosome newChromosome(chromosomes.size() + 1);
 	while (true)
 	{
-		string name;
-		string trait;
-		cout
-			<< "What is the name of the new gene?" << endl;
-		getline(cin, name);
-		cout << "What is the gene trait?" << endl;
-		getline(cin, trait);
-		Allele alleleA = GetAllele("Allele 1");
-		Allele alleleB = GetAllele("Allele 2");
-
-		if (alleleA.GetVariantType() == alleleB.GetVariantType())
-		{
-			cout << "Alleles cannot both be " << alleleA.GetVariantType() << "." << endl;
-			cout << "Please re-enter the alleles." << endl;
-			continue;
-		}
-		else
-		{
-			newChromosome.AddGene(Gene(name, trait, alleleA, alleleB));
-		}
-
-		cout << "Would you like to enter another gene?(y,n)" << endl;
 		string answer;
 		getline(cin, answer);
-		while (true)
+		cout << endl;
+		unsigned int intAnswer;
+		if (CheckIntAnswer(answer, intAnswer))
 		{
-			if (answer != "y" && answer != "n")
+			if (intAnswer > 0 && intAnswer <= chromosomePairs.size())
 			{
-				cout << "Please enter either 'y' or 'n'." << endl;
-				getline(cin, answer);
+				return intAnswer - 1;
 			}
 			else
 			{
-				break;
+				cout << "There is not a chromosome pair with the given selection. Please try again" << endl;
 			}
 		}
-		if (answer == "n")
+		else
+		{
+			cout << "Please enter an integer" << endl;
+		}
+	}
+	return -1;
+}
+
+void GeneSequencer::AnalyzeChromosomePairs()
+{
+	for (unsigned int i = 0; i < chromosomePairs.size(); i++)
+	{
+		cout << "Chromosome Pair: " << i + 1 << endl;
+		cout << "Chromosome A: " << endl;
+		cout << "Genes" << endl;
+		chromosomePairs.at(i).GetChromosomeA().AnalyzeGenotype();
+
+		cout << "Chromosome B: " << endl;
+		cout << "Genes: " << endl;
+		chromosomePairs.at(i).GetChromosomeB().AnalyzeGenotype();
+		cout << endl;
+	}
+};
+
+void GeneSequencer::CreateChromosomePairs()
+{
+
+	while (true)
+	{
+		ChromosomePair newChromosomePair(inputFile);
+		chromosomePairs.push_back(newChromosomePair);
+		cout << "Would you like to enter a new chromosome pair?(y/n)" << endl;
+		string answer;
+		getline(cin, answer);
+		cout << endl;
+		if (answer == "y")
+		{
+			ChromosomePair newChromPair(inputFile);
+			chromosomePairs.push_back(newChromPair);
+		}
+		else if (answer == "n")
 		{
 			break;
 		}
+		else
+		{
+			cout << "Please enter either 'y' or 'n'." << endl;
+		}
 	}
-	chromosomes.push_back(newChromosome);
 };
 
-void GeneSequencer::ImportChromosome()
+void GeneSequencer::ExportChromosomePair(int level)
 {
-	chromosomes.at(0).InputFromFile(inputFile);
+	int answer = ChooseChromosomePair();
+	if (level == 1)
+	{
+		chromosomePairs.at(answer).WriteToFile(outputFile);
+	}
+	else
+	{
+		chromosomePairs.at(answer).ExportChromosome(outputFile, level);
+	}
+}
+
+void GeneSequencer::ExportData()
+{
+	cout << "What data would you like to export?" << endl;
+	cout << "1. Chromosome Pair" << endl;
+	cout << "2. Chromosome" << endl;
+	cout << "3. Gene" << endl;
+	cout << "4. Allele" << endl;
+	while (true)
+	{
+		string answer;
+		getline(cin, answer);
+		cout << endl;
+		unsigned int intAnswer;
+		if (CheckIntAnswer(answer, intAnswer))
+		{
+			if (intAnswer == 1 || intAnswer == 2 || intAnswer == 3 || intAnswer == 4)
+			{
+				ExportChromosomePair(intAnswer);
+				break;
+			}
+			else
+			{
+				cout << "Please enter either '1', '2', '3', or '4'." << endl;
+			}
+		}
+		else
+		{
+			cout << "Please enter an integer." << endl;
+		}
+	}
+}
+
+Chromosome GeneSequencer::DoMeiosis(Chromosome chromosomeA, Chromosome chromosomeB){
+
 };
-void GeneSequencer::ExportChromosome(){};
-Chromosome GeneSequencer::DoMeiosis(Chromosome chromosomeA, Chromosome chromosomeB){};
-void GeneSequencer::SequenceChromosome(Chromosome inputChromosome){};
-bool GeneSequencer::PowerOnSelfTest(){};
+
+bool GeneSequencer::PowerOnSelfTest()
+{
+	return true;
+};

@@ -1,5 +1,5 @@
 #pragma once
-#include "Chromosome.hpp"
+#include "ChromosomePair.hpp"
 #include <fstream>
 #include <vector>
 
@@ -8,16 +8,15 @@ class GeneSequencer
   private:
 	std::ofstream outputFile;
 	std::ifstream inputFile;
-	std::vector<Chromosome> chromosomes;
-	Allele GetAllele(std::string alleleNumber);
-	int ChooseChromosome();
+	std::vector<ChromosomePair> chromosomePairs;
+	int ChooseChromosomePair();
+	bool CheckIntAnswer(std::string answer, unsigned int &assignInt);
+	void ExportChromosomePair(int level);
 
   public:
-	void AnalyzeChromosome();
-	void CreateChromosome();
-	void ImportChromosome();
-	void ExportChromosome();
+	void AnalyzeChromosomePairs();
+	void CreateChromosomePairs();
+	void ExportData();
 	Chromosome DoMeiosis(Chromosome chromosomeA, Chromosome chromosomeB);
-	void SequenceChromosome(Chromosome inputChromosome);
 	bool PowerOnSelfTest();
 };

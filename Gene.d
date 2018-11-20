@@ -1,5 +1,5 @@
-Gene.o: Gene.cpp Allele.hpp Gene.hpp
-
-Allele.hpp:
+Gene.o: Gene.cpp Gene.hpp Allele.hpp
 
 Gene.hpp:
+
+Allele.hpp:

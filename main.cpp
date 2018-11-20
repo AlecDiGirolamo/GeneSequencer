@@ -15,10 +15,9 @@ int displayMenu()
 	cout << "Please select one of the following menu options." << endl;
 	cout << "1. Create Chromosome" << endl;
 	cout << "2. Analyze Chromosome" << endl;
-	cout << "3. Output Chromsome to File" << endl;
-	cout << "4. Input Chromosome from File" << endl;
-	cout << "5. Combine Chromosomes" << endl;
-	cout << "6. Exit" << endl;
+	cout << "3. Export Data" << endl;
+	cout << "4. Combine Chromosomes" << endl;
+	cout << "5. Exit" << endl;
 
 	string userChoice;
 	getline(cin, userChoice);
@@ -44,10 +43,6 @@ int displayMenu()
 		{
 			return 5;
 		}
-		else if (userChoice == "6")
-		{
-			return 6;
-		}
 		else
 		{
 			cout << "Please choose one of the given menu options." << endl;
@@ -62,23 +57,20 @@ int main(int argc, char *argv[])
 
 	int userChoice;
 
-	while ((userChoice = displayMenu()) != 6)
+	while ((userChoice = displayMenu()) != 5)
 	{
 		switch (userChoice)
 		{
 		case 1:
-			geneSequencer.CreateChromosome();
+			geneSequencer.CreateChromosomePairs();
 			break;
 		case 2:
-			geneSequencer.AnalyzeChromosome();
+			geneSequencer.AnalyzeChromosomePairs();
 			break;
 		case 3:
-			geneSequencer.ExportChromosome();
+			geneSequencer.ExportData();
 			break;
 		case 4:
-			geneSequencer.ImportChromosome();
-			break;
-		case 5:
 			geneSequencer.DoMeiosis(Chromosome(), Chromosome());
 			break;
 		default:

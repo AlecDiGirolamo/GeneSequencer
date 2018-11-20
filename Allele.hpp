@@ -7,9 +7,12 @@ class Allele
 	std::string nucleotideSequence;
 	std::string variantName;
 	std::string variantType;
+	void InputManually();
+	void InputFromFile(std::ifstream &file);
 
   public:
 	Allele();
+	Allele(std::ifstream &file);
 	Allele(std::string iNucleotideSequence, std::string iVariantName, std::string iVariantType);
 
 	void SetNucleotideSequence(std::string iNucleotideSequence);
@@ -19,6 +22,6 @@ class Allele
 	std::string GetVariantName();
 	std::string GetVariantType();
 
-	void WriteAlleleToFile(std::ofstream &file);
+	void WriteToFile(std::ofstream &file);
 	bool RunUnitTests();
 };

@@ -30,7 +30,7 @@
 		"editor.detectIndentation": false,
 		"editor.dragAndDrop": false,
 		"editor.showFoldingControls": "always",
-		"workbench.colorTheme": "Default Light+",
+		"workbench.colorTheme": "Visual Studio Dark",
 		"workbench.startupEditor": "none",
 		"debug.enableAllHovers": true,
 		"debug.inlineValues": true,
