@@ -17,11 +17,32 @@ bool GeneSequencer::CheckIntAnswer(string answer, unsigned int &assignInt)
 	return true;
 }
 
-int GeneSequencer::ChooseChromosomePair()
+bool testChromosomes(Chromosome chromosomeA, Chromosome chromosomeB)
 {
-	if (chromosomePairs.size() > 0)
+	if (chromosomeA.GetGenes().size() != chromosomeB.GetGenes().size())
 	{
-		AnalyzeChromosomePairs();
+		cout << "The ammount of genes in the chromosomes are not the same." << endl;
+		return false;
+	}
+	else
+	{
+		for (unsigned int i = 0; i < chromosomeA.GetGenes().size(); i++)
+		{
+			if (chromosomeA.GetGenes().at(i).GetName() != chromosomeB.GetGenes().at(i).GetName())
+			{
+				cout << "A pair of genes did not match in the chromosomes." << endl;
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+int GeneSequencer::ChooseChromosome()
+{
+	if (chromosomes.size() > 0)
+	{
+		AnalyzeChromosomes();
 	}
 	else
 	{
@@ -35,7 +56,7 @@ int GeneSequencer::ChooseChromosomePair()
 		unsigned int intAnswer;
 		if (CheckIntAnswer(answer, intAnswer))
 		{
-			if (intAnswer > 0 && intAnswer <= chromosomePairs.size())
+			if (intAnswer > 0 && intAnswer <= chromosomes.size())
 			{
 				return intAnswer - 1;
 			}
@@ -52,37 +73,29 @@ int GeneSequencer::ChooseChromosomePair()
 	return -1;
 }
 
-void GeneSequencer::AnalyzeChromosomePairs()
+void GeneSequencer::AnalyzeChromosomes()
 {
-	for (unsigned int i = 0; i < chromosomePairs.size(); i++)
+	for (unsigned int i = 0; i < chromosomes.size(); i++)
 	{
-		cout << "Chromosome Pair: " << i + 1 << endl;
-		cout << "Chromosome A: " << endl;
-		cout << "Genes" << endl;
-		chromosomePairs.at(i).GetChromosomeA().AnalyzeGenotype();
-
-		cout << "Chromosome B: " << endl;
-		cout << "Genes: " << endl;
-		chromosomePairs.at(i).GetChromosomeB().AnalyzeGenotype();
-		cout << endl;
+		cout << "Chromosome " << i + 1 << ": " << endl;
+		chromosomes.at(i).AnalyzeGenotype();
 	}
 };
 
-void GeneSequencer::CreateChromosomePairs()
+void GeneSequencer::CreateChromosomes()
 {
-
+	Chromosome newChromosome(inputFile);
+	chromosomes.push_back(newChromosome);
 	while (true)
 	{
-		ChromosomePair newChromosomePair(inputFile);
-		chromosomePairs.push_back(newChromosomePair);
-		cout << "Would you like to enter a new chromosome pair?(y/n)" << endl;
+		cout << "Would you like to enter a new chromosome?(y/n)" << endl;
 		string answer;
 		getline(cin, answer);
 		cout << endl;
 		if (answer == "y")
 		{
-			ChromosomePair newChromPair(inputFile);
-			chromosomePairs.push_back(newChromPair);
+			Chromosome newChromosome(inputFile);
+			chromosomes.push_back(newChromosome);
 		}
 		else if (answer == "n")
 		{
@@ -95,26 +108,30 @@ void GeneSequencer::CreateChromosomePairs()
 	}
 };
 
-void GeneSequencer::ExportChromosomePair(int level)
+void GeneSequencer::ExportChromosome(int level)
 {
-	int answer = ChooseChromosomePair();
+	int answer = ChooseChromosome();
+	if (answer == -1)
+	{
+		cout << "There was a problem selecting a chromosome." << endl;
+		return;
+	}
 	if (level == 1)
 	{
-		chromosomePairs.at(answer).WriteToFile(outputFile);
+		chromosomes.at(answer).WriteToFile(outputFile);
 	}
 	else
 	{
-		chromosomePairs.at(answer).ExportChromosome(outputFile, level);
+		chromosomes.at(answer).ExportGene(outputFile, level);
 	}
 }
 
 void GeneSequencer::ExportData()
 {
 	cout << "What data would you like to export?" << endl;
-	cout << "1. Chromosome Pair" << endl;
-	cout << "2. Chromosome" << endl;
-	cout << "3. Gene" << endl;
-	cout << "4. Allele" << endl;
+	cout << "1. Chromosome" << endl;
+	cout << "2. Gene" << endl;
+	cout << "3. Allele" << endl;
 	while (true)
 	{
 		string answer;
@@ -123,9 +140,9 @@ void GeneSequencer::ExportData()
 		unsigned int intAnswer;
 		if (CheckIntAnswer(answer, intAnswer))
 		{
-			if (intAnswer == 1 || intAnswer == 2 || intAnswer == 3 || intAnswer == 4)
+			if (intAnswer == 1 || intAnswer == 2 || intAnswer == 3)
 			{
-				ExportChromosomePair(intAnswer);
+				ExportChromosome(intAnswer);
 				break;
 			}
 			else
@@ -140,11 +157,26 @@ void GeneSequencer::ExportData()
 	}
 }
 
-Chromosome GeneSequencer::DoMeiosis(Chromosome chromosomeA, Chromosome chromosomeB){
+void GeneSequencer::DoMeiosis()
+{
+	cout << "Choose the first Chromosome: " << endl;
+	Chromosome chromosomeA = chromosomes.at(ChooseChromosome());
 
+	cout << "Choose the second Chromosome: " << endl;
+	Chromosome chromosomeB = chromosomes.at(ChooseChromosome());
+
+	chromosomes.push_back(chromosomeA + chromosomeB);
 };
 
 bool GeneSequencer::PowerOnSelfTest()
 {
+	for (unsigned int i = 0; i < chromosomes.size(); i++)
+	{
+		if (!chromosomes.at(i).RunUnitTest())
+		{
+			cout << "Chromosome " << i + 1 << " failed its test." << endl;
+			return false;
+		}
+	}
 	return true;
 };

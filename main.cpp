@@ -62,26 +62,21 @@ int main(int argc, char *argv[])
 		switch (userChoice)
 		{
 		case 1:
-			geneSequencer.CreateChromosomePairs();
+			geneSequencer.CreateChromosomes();
 			break;
 		case 2:
-			geneSequencer.AnalyzeChromosomePairs();
+			geneSequencer.AnalyzeChromosomes();
 			break;
 		case 3:
 			geneSequencer.ExportData();
 			break;
 		case 4:
-			geneSequencer.DoMeiosis(Chromosome(), Chromosome());
+			geneSequencer.DoMeiosis();
 			break;
 		default:
 			cout << "There was a problem with the selected menu option: " << userChoice << endl;
 			break;
 		}
-	}
-
-	{
-		cout << "Hit enter to exit:";
-		cin.get();
 	}
 	return 0;
 }

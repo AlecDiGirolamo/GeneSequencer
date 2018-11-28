@@ -1,3 +1,4 @@
+/*
 #include "ChromosomePair.hpp"
 #include "Chromosome.hpp"
 #include <iostream>
@@ -55,7 +56,7 @@ void ChromosomePair::InputFromFile(ifstream &file)
 
 			if (row.size() == 8)
 			{
-				inputChromosome.AddGene(Gene(row.at(0), row.at(1), Allele(row.at(2), row.at(3), row.at(4)), Allele(row.at(5), row.at(6), row.at(7))));
+				inputChromosome.AddGene(Gene(row.at(0), row.at(1), Allele(row.at(2), row.at(3), row.at(4), row.at(5), row.at(6)), Allele(row.at(7), row.at(8), row.at(9), row.at(10), row.at(11))));
 			}
 			else
 			{
@@ -127,87 +128,4 @@ int ChromosomePair::ChooseChromosome()
 	return 0;
 }
 
-ChromosomePair::ChromosomePair(ifstream &file)
-{
-
-	cout << "Would you like to enter the pair manually or by file?(manual/file)" << endl;
-	while (true)
-	{
-		string answer;
-		getline(cin, answer);
-		cout << endl;
-		if (answer != "manual" && answer != "file")
-		{
-			cout << "Enter either 'manual' or 'file'." << endl;
-			cout << endl;
-		}
-		else if (answer == "manual")
-		{
-			InputManually(file);
-			break;
-		}
-		else
-		{
-			InputFromFile(file);
-			break;
-		}
-	}
-}
-Chromosome ChromosomePair::GetChromosomeA()
-{
-	return chromosomeA;
-}
-Chromosome ChromosomePair::GetChromosomeB()
-{
-	return chromosomeB;
-}
-void ChromosomePair::WriteToFile(std::ofstream &file)
-{
-	string fileName;
-	cout << "Enter the file name." << endl;
-	getline(cin, fileName);
-	cout << endl;
-	file.open(fileName, ios::app);
-	for (unsigned int i = 0; i < chromosomeA.GetGenes().size(); i++)
-	{
-		file << chromosomeA.GetGenes().at(1).GetName() << "," << chromosomeA.GetGenes().at(i).GetTraitType() << "," << chromosomeA.GetGenes().at(i).GetAlleleA().GetVariantName() << "," << chromosomeA.GetGenes().at(i).GetAlleleA().GetVariantType() << "," << chromosomeA.GetGenes().at(i).GetAlleleA().GetNucleotideSequence() << "," << chromosomeA.GetGenes().at(i).GetAlleleB().GetVariantName() << "," << chromosomeA.GetGenes().at(i).GetAlleleB().GetVariantType() << "," << chromosomeA.GetGenes().at(i).GetAlleleB().GetNucleotideSequence() << endl;
-	}
-	file << endl;
-	for (unsigned int i = 0; i < chromosomeB.GetGenes().size(); i++)
-	{
-		file << chromosomeB.GetGenes().at(1).GetName() << "," << chromosomeB.GetGenes().at(i).GetTraitType() << "," << chromosomeB.GetGenes().at(i).GetAlleleA().GetVariantName() << "," << chromosomeB.GetGenes().at(i).GetAlleleA().GetVariantType() << "," << chromosomeB.GetGenes().at(i).GetAlleleA().GetNucleotideSequence() << "," << chromosomeB.GetGenes().at(i).GetAlleleB().GetVariantName() << "," << chromosomeB.GetGenes().at(i).GetAlleleB().GetVariantType() << "," << chromosomeB.GetGenes().at(i).GetAlleleB().GetNucleotideSequence() << endl;
-	}
-	file.close();
-};
-
-void ChromosomePair::ExportChromosome(ofstream &file, int level)
-{
-	int answer = ChooseChromosome();
-	if (level == 2)
-	{
-		if (answer == 1)
-		{
-			chromosomeA.WriteToFile(file);
-		}
-		else
-		{
-			chromosomeB.WriteToFile(file);
-		}
-	}
-	else
-	{
-		if (answer == 1)
-		{
-			chromosomeA.ExportGene(file, level);
-		}
-		else
-		{
-			chromosomeB.ExportGene(file, level);
-		}
-	}
-}
-
-bool ChromosomePair::RunUnitTest()
-{
-	return true;
-}
+*/

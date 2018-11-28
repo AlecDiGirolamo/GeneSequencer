@@ -13,13 +13,15 @@ class Chromosome
 	bool CheckIntAnswer(std::string answer, unsigned int &assignInt);
 
   public:
-	Chromosome();
+	Chromosome(std::vector<Gene> inputGenes);
 	Chromosome(std::ifstream &file);
 
 	std::vector<Gene> GetGenes();
 
 	void AnalyzeGenotype();
 	void AddGene(Gene inputGene);
+
+	Chromosome operator+(Chromosome c);
 
 	void ExportGene(std::ofstream &file, int level);
 	void WriteToFile(std::ofstream &file);

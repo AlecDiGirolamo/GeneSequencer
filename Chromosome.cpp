@@ -20,7 +20,10 @@ bool Chromosome::CheckIntAnswer(string answer, unsigned int &assignInt)
 	return true;
 }
 
-Chromosome::Chromosome(){};
+Chromosome::Chromosome(vector<Gene> inputGenes)
+{
+	genes = inputGenes;
+};
 
 Chromosome::Chromosome(ifstream &file)
 {
@@ -71,9 +74,9 @@ void Chromosome::InputFromFile(std::ifstream &file)
 			{
 				row.push_back(data);
 			}
-			if (row.size() == 8)
+			if (row.size() == 14)
 			{
-				AddGene(Gene(row.at(0), row.at(1), Allele(row.at(2), row.at(3), row.at(4)), Allele(row.at(5), row.at(6), row.at(7))));
+				AddGene(Gene(row.at(0), row.at(1), Allele(row.at(2), "dominant", row.at(3), "dominant", "0000"), Allele(row.at(4), row.at(5), row.at(6), row.at(7), row.at(8)), Allele(row.at(9), row.at(10), row.at(11), row.at(12), row.at(13))));
 				validDataCount = true;
 			}
 			else
@@ -123,15 +126,7 @@ void Chromosome::InputManually(ifstream &file)
 int Chromosome::ChooseGene()
 {
 	cout << "Choose a gene: " << endl;
-	for (unsigned int i = 0; i < genes.size(); i++)
-	{
-		cout << i + 1 << ": " << endl;
-		cout << "Name: " << genes.at(i).GetName() << endl;
-		cout << "Genetic trait: " << genes.at(i).GetTraitType() << endl;
-		cout << "Expressed allele: " << genes.at(i).GetExpressedTrait().GetVariantName() << "-dominant" << endl;
-		cout << "Nucleotide sequence: " << genes.at(i).GetExpressedTrait().GetNucleotideSequence() << endl
-			 << endl;
-	}
+	AnalyzeGenotype();
 
 	while (true)
 	{
@@ -158,10 +153,13 @@ void Chromosome::AnalyzeGenotype()
 {
 	for (unsigned int i = 0; i < genes.size(); i++)
 	{
+		cout << "Gene " << i + 1 << ": " << endl;
 		cout << "Name: " << genes.at(i).GetName() << endl;
 		cout << "Genetic trait: " << genes.at(i).GetTraitType() << endl;
-		cout << "Expressed allele: " << genes.at(i).GetExpressedTrait().GetVariantName() << "-dominant" << endl;
-		cout << "Nucleotide sequence: " << genes.at(i).GetExpressedTrait().GetNucleotideSequence() << endl
+		cout << "Expressed allele: " << endl;
+		cout << "Trait One: " << genes.at(i).GetExpressedTrait().GetTraitOneName() << endl;
+		cout << "Trait Two: " << genes.at(i).GetExpressedTrait().GetTraitTwoName() << endl;
+		cout << "Nucleotide sequence: " << genes.at(i).GetNucleotideSequence() << endl
 			 << endl;
 	}
 };
@@ -179,7 +177,7 @@ void Chromosome::AddGene(Gene inputGene)
 void Chromosome::ExportGene(ofstream &file, int level)
 {
 	int answer = ChooseGene();
-	if (level == 3)
+	if (level == 1)
 	{
 		genes.at(answer).WriteToFile(file);
 	}
@@ -198,12 +196,45 @@ void Chromosome::WriteToFile(std::ofstream &file)
 	file.open(fileName, ios::app);
 	for (unsigned int i = 0; i < genes.size(); i++)
 	{
-		file << genes.at(1).GetName() << "," << genes.at(i).GetTraitType() << "," << genes.at(i).GetAlleleA().GetVariantName() << "," << genes.at(i).GetAlleleA().GetVariantType() << "," << genes.at(i).GetAlleleA().GetNucleotideSequence() << "," << genes.at(i).GetAlleleB().GetVariantName() << "," << genes.at(i).GetAlleleB().GetVariantType() << "," << genes.at(i).GetAlleleB().GetNucleotideSequence() << endl;
+		file << genes.at(i).GetName() << "," << genes.at(i).GetTraitType() << ","
+			 << genes.at(i).GetExpressedTrait().GetTraitOneName() << ","
+			 << genes.at(i).GetExpressedTrait().GetTraitTwoName() << ","
+			 << genes.at(i).GetAlleleA().GetTraitOneName() << ","
+			 << genes.at(i).GetAlleleA().GetTraitOneType() << ","
+			 << genes.at(i).GetAlleleA().GetTraitTwoName() << ","
+			 << genes.at(i).GetAlleleA().GetTraitTwoType() << ","
+			 << genes.at(i).GetAlleleA().GetNucleotideSequence() << ","
+			 << genes.at(i).GetAlleleB().GetTraitOneName() << ","
+			 << genes.at(i).GetAlleleB().GetTraitOneType() << ","
+			 << genes.at(i).GetAlleleB().GetTraitTwoName() << ","
+			 << genes.at(i).GetAlleleB().GetTraitTwoType() << ","
+			 << genes.at(i).GetAlleleB().GetNucleotideSequence() << endl;
 	}
 	file.close();
 };
 
+Chromosome Chromosome::operator+(Chromosome c)
+{
+	vector<Gene> newGenes;
+	for (unsigned int i = 0; i < this->genes.size(); i++)
+	{
+		if (this->genes.at(i).GetName() == c.genes.at(i).GetName())
+		{
+			newGenes.push_back(this->genes.at(i) + c.genes.at(i));
+		}
+	}
+	return Chromosome(newGenes);
+}
+
 bool Chromosome::RunUnitTest()
 {
+	for (unsigned int i = 0; i < genes.size(); i++)
+	{
+		if (genes.at(i).RunUnitTest())
+		{
+			cout << "Gene " << i + 1 << " failed its test." << endl;
+			return false;
+		}
+	}
 	return true;
 };

@@ -1,3 +1,4 @@
+/*
 #pragma once
 #include "Chromosome.hpp"
 #include <fstream>
@@ -22,3 +23,4 @@ class ChromosomePair
 	void ExportChromosome(std::ofstream &file, int level);
 	bool RunUnitTest();
 };
+*/
