@@ -28,7 +28,7 @@ bool testChromosomes(Chromosome chromosomeA, Chromosome chromosomeB)
 	{
 		for (unsigned int i = 0; i < chromosomeA.GetGenes().size(); i++)
 		{
-			if (chromosomeA.GetGenes().at(i).GetName() != chromosomeB.GetGenes().at(i).GetName())
+			if (chromosomeA.GetGenes().at(i).GetTraitType() != chromosomeB.GetGenes().at(i).GetTraitType())
 			{
 				cout << "A pair of genes did not match in the chromosomes." << endl;
 				return false;
@@ -159,13 +159,19 @@ void GeneSequencer::ExportData()
 
 void GeneSequencer::DoMeiosis()
 {
-	cout << "Choose the first Chromosome: " << endl;
-	Chromosome chromosomeA = chromosomes.at(ChooseChromosome());
+	if (chromosomes.size() > 1)
+	{
+		cout << "Choose the first Chromosome: " << endl;
+		Chromosome chromosomeA = chromosomes.at(ChooseChromosome());
 
-	cout << "Choose the second Chromosome: " << endl;
-	Chromosome chromosomeB = chromosomes.at(ChooseChromosome());
+		cout << "Choose the second Chromosome: " << endl;
+		Chromosome chromosomeB = chromosomes.at(ChooseChromosome());
 
-	chromosomes.push_back(chromosomeA + chromosomeB);
+		if (testChromosomes(chromosomeA, chromosomeB))
+		{
+			chromosomes.push_back(chromosomeA + chromosomeB);
+		}
+	}
 };
 
 bool GeneSequencer::PowerOnSelfTest()
