@@ -1,3 +1,3 @@
-UHRG,hair,brown,short,brown,dominant,long,recessive,CCAG,blonde,recessive,short,recessive,CCTG
-UHTG,hair,red,long,red,recessive,long,recessive,CCAG,blonde,recessive,short,recessive,CCTG
-UHCG,hair,brown,short,brown,dominant,long,recessive,CCAG,blonde,recessive,short,recessive,CCTG
+G1,G1TraitType,G1A1T1,G1A2T2,G1A1T1,G1A1T2,NS,G1A2T1,G1A2T2,NS
+G2,G2TraitType,red,long,red,long,CC,blonde,short,CC
+G3,G3TraitType,brown,short,brown,long,CG,blonde,short,CC

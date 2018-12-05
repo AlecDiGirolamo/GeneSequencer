@@ -33,14 +33,36 @@ Allele::Allele(ifstream &file)
 		}
 	}
 };
-
 Allele::Allele(string inputTraitOneName, string inputTraitOneType, string inputTraitTwoName, string inputTraitTwoType, string inputNucleotideSequence)
 {
-	nucleotideSequence = inputNucleotideSequence;
 	traitOneName = inputTraitOneName;
 	traitOneType = inputTraitOneType;
 	traitTwoName = inputTraitTwoName;
 	traitTwoType = inputTraitTwoType;
+	nucleotideSequence = inputNucleotideSequence;
+}
+Allele::Allele(string inputTraitOneName, string inputTraitTwoName, string inputNucleotideSequence)
+{
+	nucleotideSequence = inputNucleotideSequence;
+	traitOneName = inputTraitOneName;
+	traitTwoName = inputTraitTwoName;
+	if (isupper(nucleotideSequence.at(0)))
+	{
+		traitOneType = "dominant";
+	}
+	else
+	{
+		traitOneType = "recessive";
+	}
+
+	if (isupper(nucleotideSequence.at(1)))
+	{
+		traitTwoType = "dominant";
+	}
+	else
+	{
+		traitTwoType = "recessive";
+	}
 };
 
 void Allele::InputManually()
@@ -49,48 +71,44 @@ void Allele::InputManually()
 	getline(cin, traitOneName);
 	cout << endl;
 
-	cout << "Enter the first trait type.(dominant/recessive)" << endl;
-	string inputTraitOneType;
-	while (true)
-	{
-		getline(cin, inputTraitOneType);
-		cout << endl;
-		if (inputTraitOneType != "dominant" && inputTraitOneType != "recessive")
-		{
-			cout << "Enter either 'dominant' or 'recessive'." << endl;
-		}
-		else
-		{
-			traitOneType = inputTraitOneType;
-			break;
-		}
-	}
-
 	cout << "Enter the second trait name" << endl;
 	getline(cin, traitTwoName);
 	cout << endl;
 
-	cout << "Enter the second trait type.(dominant/recessive)" << endl;
-	string inputTraitTwoType;
+	cout << "Enter the nucleotide sequnce" << endl;
 	while (true)
 	{
-		getline(cin, inputTraitTwoType);
+		getline(cin, nucleotideSequence);
 		cout << endl;
-		if (inputTraitTwoType != "dominant" && inputTraitTwoType != "recessive")
+		if (nucleotideSequence.size() == 2)
 		{
-			cout << "Enter either 'dominant' or 'recessive'." << endl;
+			break;
 		}
 		else
 		{
-			traitTwoType = inputTraitTwoType;
-			break;
+			cout << "Invalid sequence length." << endl;
 		}
 	}
-
-	cout << "Enter the nucleotide sequnce" << endl;
-	getline(cin, nucleotideSequence);
 	cout << endl;
-}
+
+	if (isupper(nucleotideSequence.at(0)))
+	{
+		traitOneType = "dominant";
+	}
+	else
+	{
+		traitOneType = "recessive";
+	}
+
+	if (isupper(nucleotideSequence.at(1)))
+	{
+		traitTwoType = "dominant";
+	}
+	else
+	{
+		traitTwoType = "recessive";
+	}
+};
 
 void Allele::InputFromFile(ifstream &file)
 {
@@ -105,22 +123,42 @@ void Allele::InputFromFile(ifstream &file)
 
 		string line;
 		getline(file, line);
-		stringstream ss(line); // put it in a stringstream (internal stream)
+		stringstream ss(line);
 		vector<string> row;
 		string data;
-		while (getline(ss, data, ',')) // read (string) items up to a comma
+		while (getline(ss, data, ','))
 		{
 			row.push_back(data);
 		}
-		if (row.size() == 5)
+		if (row.size() == 3)
 		{
 			traitOneName = row.at(0);
-			traitOneType = row.at(1);
-			traitTwoName = row.at(2);
-			traitTwoType = row.at(3);
-			nucleotideSequence = row.at(4);
+			traitTwoName = row.at(1);
+			nucleotideSequence = row.at(2);
+
+			if (isupper(nucleotideSequence.at(0)))
+			{
+				traitOneType = "dominant";
+			}
+			else
+			{
+				traitOneType = "recessive";
+			}
+
+			if (isupper(nucleotideSequence.at(1)))
+			{
+				traitTwoType = "dominant";
+			}
+			else
+			{
+				traitTwoType = "recessive";
+			}
+			if (nucleotideSequence.size() == 2)
+			{
+				file.close();
+				break;
+			}
 			file.close();
-			break;
 		}
 		else
 		{
@@ -129,7 +167,7 @@ void Allele::InputFromFile(ifstream &file)
 		}
 		file.close();
 	}
-}
+};
 /*
 void Allele::SetNucleotideSequence(string inputNucleotideSequence)
 {
@@ -189,6 +227,7 @@ Allele Allele::operator+(Allele a)
 	string tempTraitOneType;
 	string tempTraitTwo;
 	string tempTraitTwoType;
+	string tempNuc;
 
 	if (this->GetTraitOneType() == a.GetTraitOneType())
 	{
@@ -196,12 +235,12 @@ Allele Allele::operator+(Allele a)
 		if (randNum == 1)
 		{
 			tempTraitOne = this->GetTraitOneName();
-			tempTraitOneType = this->GetTraitOneType();
+			tempNuc = this->GetNucleotideSequence().at(0);
 		}
 		else
 		{
 			tempTraitOne = a.GetTraitOneName();
-			tempTraitOneType = a.GetTraitOneType();
+			tempNuc = a.GetNucleotideSequence().at(0);
 		}
 	}
 	else if (this->GetTraitOneType() == "dominant")
@@ -210,12 +249,12 @@ Allele Allele::operator+(Allele a)
 		if (randNum == 1)
 		{
 			tempTraitOne = a.GetTraitOneName();
-			tempTraitOneType = a.GetTraitOneType();
+			tempNuc = a.GetNucleotideSequence().at(0);
 		}
 		else
 		{
 			tempTraitOne = this->GetTraitOneName();
-			tempTraitOneType = this->GetTraitOneType();
+			tempNuc = this->GetNucleotideSequence().at(0);
 		}
 	}
 	else
@@ -224,12 +263,12 @@ Allele Allele::operator+(Allele a)
 		if (randNum == 1)
 		{
 			tempTraitOne = this->GetTraitOneName();
-			tempTraitOneType = this->GetTraitOneType();
+			tempNuc = this->GetNucleotideSequence().at(0);
 		}
 		else
 		{
 			tempTraitOne = a.GetTraitOneName();
-			tempTraitOneType = a.GetTraitOneType();
+			tempNuc = a.GetNucleotideSequence().at(0);
 		}
 	}
 
@@ -240,12 +279,12 @@ Allele Allele::operator+(Allele a)
 		if (randNum == 1)
 		{
 			tempTraitTwo = this->GetTraitTwoName();
-			tempTraitTwoType = this->GetTraitTwoType();
+			tempNuc += this->GetNucleotideSequence().at(1);
 		}
 		else
 		{
 			tempTraitTwo = a.GetTraitTwoName();
-			tempTraitTwoType = a.GetTraitTwoType();
+			tempNuc += a.GetNucleotideSequence().at(1);
 		}
 	}
 	else if (this->GetTraitTwoType() == "dominant")
@@ -254,12 +293,12 @@ Allele Allele::operator+(Allele a)
 		if (randNum == 1)
 		{
 			tempTraitTwo = a.GetTraitTwoName();
-			tempTraitTwoType = a.GetTraitTwoType();
+			tempNuc += a.GetNucleotideSequence().at(1);
 		}
 		else
 		{
 			tempTraitTwo = this->GetTraitTwoName();
-			tempTraitTwoType = this->GetTraitTwoType();
+			tempNuc += this->GetNucleotideSequence().at(1);
 		}
 	}
 	else
@@ -268,21 +307,16 @@ Allele Allele::operator+(Allele a)
 		if (randNum == 1)
 		{
 			tempTraitTwo = this->GetTraitTwoName();
-			tempTraitTwoType = this->GetTraitTwoType();
+			tempNuc += this->GetNucleotideSequence().at(1);
 		}
 		else
 		{
 			tempTraitTwo = a.GetTraitTwoName();
-			tempTraitTwoType = a.GetTraitTwoType();
+			tempNuc += a.GetNucleotideSequence().at(1);
 		}
 	}
-	string tempNuc;
-	tempNuc += this->GetNucleotideSequence().at(0);
-	tempNuc += this->GetNucleotideSequence().at(1);
-	tempNuc += a.GetNucleotideSequence().at(0);
-	tempNuc += a.GetNucleotideSequence().at(1);
 
-	return Allele(tempTraitOne, tempTraitOneType, tempTraitTwo, tempTraitTwoType, tempNuc);
+	return Allele(tempTraitOne, tempTraitTwo, tempNuc);
 }
 
 void Allele::WriteToFile(ofstream &file)
@@ -292,20 +326,45 @@ void Allele::WriteToFile(ofstream &file)
 	getline(cin, fileName);
 	cout << endl;
 	file.open(fileName, ios::app);
-	file << traitOneName << "," << traitOneType << "," << traitTwoName << "," << traitTwoType << "," << nucleotideSequence;
+	file << traitOneName << "," << traitTwoName << "," << nucleotideSequence;
 	file.close();
 };
 
 bool Allele::RunUnitTests()
 {
-	if (traitOneName != "dominant" && traitOneName != "recessive")
+	if (traitOneType != "dominant" && traitOneType != "recessive")
 	{
 		cout << "Trait one type not 'dominant' or 'recessive'" << endl;
 		return false;
 	}
-	if (traitTwoName != "dominant" && traitTwoName != "recessive")
+	if (traitTwoType != "dominant" && traitTwoType != "recessive")
 	{
 		cout << "Trait two type not 'dominant' or 'recessive'" << endl;
+		return false;
+	}
+	if (nucleotideSequence.size() != 2)
+	{
+		cout << "Nucleotide seqeunce has an invalid amount of characters." << endl;
+		return false;
+	}
+	if (isupper(nucleotideSequence.at(0)) && traitOneType != "dominant")
+	{
+		cout << "Trait one type does not match nucleotide sequence" << endl;
+		return false;
+	}
+	else if (islower(nucleotideSequence.at(0)) && traitOneType != "recessive")
+	{
+		cout << "Trait one type does not match nucleotide sequence" << endl;
+		return false;
+	}
+	if (isupper(nucleotideSequence.at(1)) && traitTwoType != "dominant")
+	{
+		cout << "Trait two type does not match nucleotide sequence" << endl;
+		return false;
+	}
+	else if (islower(nucleotideSequence.at(1)) && traitTwoType != "recessive")
+	{
+		cout << "Trait two type does not match nucleotide sequence" << endl;
 		return false;
 	}
 	return true;

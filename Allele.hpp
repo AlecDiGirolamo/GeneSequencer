@@ -16,6 +16,7 @@ class Allele
   public:
 	Allele();
 	Allele(std::ifstream &file);
+	Allele(std::string inputTraitOneName, std::string inputTraitTwoName, std::string inputNucleotideSequence);
 	Allele(std::string inputTraitOneName, std::string inputTraitOneType, std::string inputTraitTwoName, std::string inputTraitTwoType, std::string inputNucleotideSequence);
 
 	/*

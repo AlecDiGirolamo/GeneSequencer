@@ -12,6 +12,10 @@ using namespace std;
 
 bool Gene::CheckIntAnswer(string answer, int &assignInt)
 {
+	if (answer.size() == 0)
+	{
+		return false;
+	}
 	for (unsigned int i = 0; i < answer.size(); i++)
 	{
 		if (answer.at(i) <= '0' || answer.at(i) >= '9')
@@ -35,25 +39,54 @@ void Gene::InputFromFile(ifstream &file)
 
 		string line;
 		getline(file, line);
-		stringstream ss(line); // put it in a stringstream (internal stream)
+
+		stringstream ss(line);
 		vector<string> row;
 		string data;
-		while (getline(ss, data, ',')) // read (string) items up to a comma
+		while (getline(ss, data, ','))
 		{
 			row.push_back(data);
 		}
-		if (row.size() == 14)
+		if (row.size() == 10)
 		{
+			if (row.at(6).size() != 2 || row.at(9).size() != 2)
+			{
+				cout << "Nucleotide sequence of an allele has an invalid amount of characters." << endl;
+				continue;
+			}
 
 			name = row.at(0);
 			traitType = row.at(1);
-			expressedTraits = Allele(row.at(2), "dominant", row.at(3), "dominant", "0000");
-			alleleA = Allele(row.at(4), row.at(5), row.at(6), row.at(7), row.at(8));
-			alleleB = Allele(row.at(9), row.at(10), row.at(11), row.at(12), row.at(13));
-			if (expressedTraits.GetTraitOneName() != alleleA.GetTraitOneName() && expressedTraits.GetTraitOneName() != alleleB.GetTraitTwoName())
+			alleleA = Allele(row.at(4), row.at(5), row.at(6));
+			alleleB = Allele(row.at(7), row.at(8), row.at(9));
+			nucleotideSequence = row.at(6);
+			nucleotideSequence += row.at(9);
+
+			string tempOneType;
+			string tempTwoType;
+			if (row.at(2) == alleleA.GetTraitOneName())
 			{
-				cout << "The expressed alleles do not match" << endl;
+				tempOneType = alleleA.GetTraitOneType();
 			}
+			else
+			{
+				tempOneType = alleleB.GetTraitOneType();
+			}
+			if (row.at(3) == alleleA.GetTraitTwoName())
+			{
+				tempTwoType = alleleA.GetTraitTwoType();
+			}
+			else
+			{
+				tempTwoType = alleleB.GetTraitTwoType();
+			}
+
+			expressedTraits = Allele(row.at(2), tempOneType, row.at(3), tempTwoType, "00");
+			if ((expressedTraits.GetTraitOneName() != alleleA.GetTraitOneName() && expressedTraits.GetTraitOneName() != alleleB.GetTraitOneName()) || (expressedTraits.GetTraitTwoName() != alleleA.GetTraitTwoName() && expressedTraits.GetTraitTwoName() != alleleB.GetTraitTwoName()))
+			{
+				cout << "The expressed alleles do not match any of the given alleles." << endl;
+			}
+
 			else
 			{
 				file.close();
@@ -67,7 +100,7 @@ void Gene::InputFromFile(ifstream &file)
 		}
 		file.close();
 	}
-}
+};
 
 void Gene::InputManually(ifstream &file)
 {
@@ -98,14 +131,14 @@ int Gene::ChooseAllele()
 	cout << "First Trait Type: " << alleleA.GetTraitOneType() << endl;
 	cout << "Second Trait Name: " << alleleA.GetTraitTwoName() << endl;
 	cout << "Second Trait Type: " << alleleA.GetTraitTwoType() << endl;
-	cout << "Nucleotide Sequence" << alleleA.GetNucleotideSequence() << endl;
+	cout << "Nucleotide Sequence: " << alleleA.GetNucleotideSequence() << endl;
 	cout << endl;
 	cout << "2. Allele B: " << endl;
 	cout << "First Trait Name: " << alleleB.GetTraitOneName() << endl;
 	cout << "First Trait Type: " << alleleB.GetTraitOneType() << endl;
 	cout << "Second Trait Name: " << alleleB.GetTraitTwoName() << endl;
 	cout << "Second Trait Type: " << alleleB.GetTraitTwoType() << endl;
-	cout << "Nucleotide Sequence" << alleleB.GetNucleotideSequence() << endl;
+	cout << "Nucleotide Sequence: " << alleleB.GetNucleotideSequence() << endl;
 
 	while (true)
 	{
@@ -134,6 +167,8 @@ Gene::Gene(string inputName, string inputTraitType, Allele inputExpressedTraits,
 	expressedTraits = inputExpressedTraits;
 	alleleA = inputAlleleA;
 	alleleB = inputAlleleB;
+	nucleotideSequence = inputAlleleA.GetNucleotideSequence();
+	nucleotideSequence += inputAlleleB.GetNucleotideSequence();
 }
 
 Gene::Gene(ifstream &file)
@@ -158,6 +193,7 @@ Gene::Gene(ifstream &file)
 		else
 		{
 			InputFromFile(file);
+			break;
 		}
 	}
 }
@@ -241,17 +277,13 @@ void Gene::WriteToFile(ofstream &file)
 		 << expressedTraits.GetTraitOneName() << ","
 		 << expressedTraits.GetTraitTwoName() << ","
 		 << alleleA.GetTraitOneName() << ","
-		 << alleleA.GetTraitOneType() << ","
 		 << alleleA.GetTraitTwoName() << ","
-		 << alleleA.GetTraitTwoType() << ","
 		 << alleleA.GetNucleotideSequence() << ","
 		 << alleleB.GetTraitOneName() << ","
-		 << alleleB.GetTraitOneType() << ","
 		 << alleleB.GetTraitTwoName() << ","
-		 << alleleB.GetTraitTwoType() << ","
 		 << alleleB.GetNucleotideSequence() << "," << endl;
 	file.close();
-}
+};
 
 void Gene::ExportAllele(ofstream &file)
 {
@@ -264,7 +296,7 @@ void Gene::ExportAllele(ofstream &file)
 	{
 		alleleB.WriteToFile(file);
 	}
-}
+};
 
 bool Gene::RunUnitTest()
 {
@@ -279,6 +311,11 @@ bool Gene::RunUnitTest()
 		return false;
 	}
 	if (expressedTraits.GetTraitOneName() != alleleA.GetTraitOneName() && expressedTraits.GetTraitOneName() != alleleB.GetTraitOneName())
+	{
+		cout << "Expressed trait one does not match any either allele's expressed trait one" << endl;
+		return false;
+	}
+	if (expressedTraits.GetTraitTwoName() != alleleA.GetTraitTwoName() && expressedTraits.GetTraitTwoName() != alleleB.GetTraitTwoName())
 	{
 		cout << "Expressed trait one does not match any either allele's expressed trait one" << endl;
 		return false;

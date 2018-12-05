@@ -6,6 +6,10 @@ using namespace std;
 
 bool GeneSequencer::CheckIntAnswer(string answer, unsigned int &assignInt)
 {
+	if (answer.size() == 0)
+	{
+		return false;
+	}
 	for (unsigned int i = 0; i < answer.size(); i++)
 	{
 		if (answer.at(i) <= '0' || answer.at(i) >= '9')
@@ -17,7 +21,7 @@ bool GeneSequencer::CheckIntAnswer(string answer, unsigned int &assignInt)
 	return true;
 }
 
-bool testChromosomes(Chromosome chromosomeA, Chromosome chromosomeB)
+bool GeneSequencer::testChromosomes(Chromosome chromosomeA, Chromosome chromosomeB)
 {
 	if (chromosomeA.GetGenes().size() != chromosomeB.GetGenes().size())
 	{
@@ -75,6 +79,10 @@ int GeneSequencer::ChooseChromosome()
 
 void GeneSequencer::AnalyzeChromosomes()
 {
+	if (chromosomes.size() == 0)
+	{
+		cout << "There are currently no savaed chromosomes." << endl;
+	}
 	for (unsigned int i = 0; i < chromosomes.size(); i++)
 	{
 		cout << "Chromosome " << i + 1 << ": " << endl;
@@ -84,7 +92,7 @@ void GeneSequencer::AnalyzeChromosomes()
 
 void GeneSequencer::CreateChromosomes()
 {
-	Chromosome newChromosome(inputFile);
+	Chromosome newChromosome = Chromosome(inputFile);
 	chromosomes.push_back(newChromosome);
 	while (true)
 	{
@@ -105,6 +113,10 @@ void GeneSequencer::CreateChromosomes()
 		{
 			cout << "Please enter either 'y' or 'n'." << endl;
 		}
+	}
+	if (!PowerOnSelfTest())
+	{
+		cout << "Data testing failed." << endl;
 	}
 };
 
@@ -147,7 +159,7 @@ void GeneSequencer::ExportData()
 			}
 			else
 			{
-				cout << "Please enter either '1', '2', '3', or '4'." << endl;
+				cout << "Please enter either '1', '2', or '3'." << endl;
 			}
 		}
 		else
@@ -171,6 +183,10 @@ void GeneSequencer::DoMeiosis()
 		{
 			chromosomes.push_back(chromosomeA + chromosomeB);
 		}
+	}
+	else
+	{
+		cout << "There are not enough chromosomes to choose from." << endl;
 	}
 };
 

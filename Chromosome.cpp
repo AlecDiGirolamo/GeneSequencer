@@ -9,9 +9,13 @@ using namespace std;
 
 bool Chromosome::CheckIntAnswer(string answer, unsigned int &assignInt)
 {
+	if (answer.size() == 0)
+	{
+		return false;
+	}
 	for (unsigned int i = 0; i < answer.size(); i++)
 	{
-		if (answer.at(i) <= '0' || answer.at(i) >= '9')
+		if (!isdigit(answer.at(i)))
 		{
 			return false;
 		}
@@ -27,7 +31,6 @@ Chromosome::Chromosome(vector<Gene> inputGenes)
 
 Chromosome::Chromosome(ifstream &file)
 {
-
 	while (true)
 	{
 		cout << "Would you like to enter the chromosome manually or by file?(manual/file)" << endl;
@@ -56,54 +59,90 @@ void Chromosome::InputFromFile(std::ifstream &file)
 {
 	while (true)
 	{
-
 		string fileName;
 		cout << "Enter the file name" << endl;
 		getline(cin, fileName);
-		cout << endl;
-
 		file.open(fileName);
 		string line;
-		bool validDataCount = false;
-		while (getline(file, line)) // read a whole line of the file
+		bool dataIsValid = false;
+
+		while (getline(file, line))
 		{
-			stringstream ss(line); // put it in a stringstream (internal stream)
+
+			stringstream ss(line);
 			vector<string> row;
 			string data;
-			while (getline(ss, data, ',')) // read (string) items up to a comma
+			while (getline(ss, data, ','))
 			{
 				row.push_back(data);
 			}
-			if (row.size() == 14)
+			if (row.size() == 10)
 			{
-				AddGene(Gene(row.at(0), row.at(1), Allele(row.at(2), "dominant", row.at(3), "dominant", "0000"), Allele(row.at(4), row.at(5), row.at(6), row.at(7), row.at(8)), Allele(row.at(9), row.at(10), row.at(11), row.at(12), row.at(13))));
-				validDataCount = true;
+				if (row.at(6).size() != 2 || row.at(9).size() != 2)
+				{
+					cout << "Nucleotide sequence has an invalid amount of character." << endl;
+					break;
+				}
+				string tempName = row.at(0);
+				string tempTraitType = row.at(1);
+				Allele tempAlleleA = Allele(row.at(4), row.at(5), row.at(6));
+				Allele tempAlleleB = Allele(row.at(7), row.at(8), row.at(9));
+				string tempOneType;
+				string tempTwoType;
+				if (row.at(2) == tempAlleleA.GetTraitOneName())
+				{
+					tempOneType = tempAlleleA.GetTraitOneType();
+				}
+				else
+				{
+					tempOneType = tempAlleleB.GetTraitOneType();
+				}
+				if (row.at(3) == tempAlleleA.GetTraitTwoName())
+				{
+					tempTwoType = tempAlleleA.GetTraitTwoType();
+				}
+				else
+				{
+					tempTwoType = tempAlleleB.GetTraitTwoType();
+				}
+
+				Allele tempExpressedTraits = Allele(row.at(2), tempOneType, row.at(3), tempTwoType, "00");
+				if ((tempExpressedTraits.GetTraitOneName() != tempAlleleA.GetTraitOneName() && tempExpressedTraits.GetTraitOneName() != tempAlleleB.GetTraitOneName()) || (tempExpressedTraits.GetTraitTwoName() != tempAlleleA.GetTraitTwoName() && tempExpressedTraits.GetTraitTwoName() != tempAlleleB.GetTraitTwoName()))
+				{
+					cout << "The expressed alleles do not match any of the given alleles in a gene." << endl;
+					break;
+				}
+				else
+				{
+					genes.push_back(Gene(tempName, tempTraitType, tempExpressedTraits, tempAlleleA, tempAlleleB));
+					dataIsValid = true;
+				}
 			}
 			else
 			{
+				cout << "There was an invalid amount of data found in a row." << endl;
+				cout << "Please use the example csv format." << endl;
 				break;
 			}
 		}
-		if (validDataCount)
+
+		file.close();
+		if (dataIsValid)
 		{
-			file.close();
 			break;
 		}
 		else
 		{
-			cout << "There was an invalid amount of data found in a row" << endl;
-			cout << "Please use the example csv format" << endl;
-			genes = {};
+			cout << "There was a problem with the selected file." << endl;
 		}
-		file.close();
 	}
 };
 
 void Chromosome::InputManually(ifstream &file)
 {
-	AddGene(Gene(file));
 	while (true)
 	{
+		genes.push_back(Gene(file));
 		cout << "Would you like to enter another gene?(y/n)" << endl;
 		string answer;
 		getline(cin, answer);
@@ -114,14 +153,14 @@ void Chromosome::InputManually(ifstream &file)
 		}
 		else if (answer == "y")
 		{
-			AddGene(Gene(file));
+			genes.push_back(Gene(file));
 		}
 		else
 		{
 			break;
 		}
 	}
-}
+};
 
 int Chromosome::ChooseGene()
 {
@@ -138,7 +177,7 @@ int Chromosome::ChooseGene()
 		{
 			if (intAnswer < 1 || intAnswer > genes.size())
 			{
-				cout << "No gene with that number was found" << endl;
+				cout << "No gene with that number was found." << endl;
 			}
 			else
 			{
@@ -151,6 +190,7 @@ int Chromosome::ChooseGene()
 
 void Chromosome::AnalyzeGenotype()
 {
+
 	for (unsigned int i = 0; i < genes.size(); i++)
 	{
 		cout << "Gene " << i + 1 << ": " << endl;
@@ -169,15 +209,10 @@ vector<Gene> Chromosome::GetGenes()
 	return genes;
 }
 
-void Chromosome::AddGene(Gene inputGene)
-{
-	genes.push_back(inputGene);
-};
-
 void Chromosome::ExportGene(ofstream &file, int level)
 {
 	int answer = ChooseGene();
-	if (level == 1)
+	if (level == 2)
 	{
 		genes.at(answer).WriteToFile(file);
 	}
@@ -185,7 +220,7 @@ void Chromosome::ExportGene(ofstream &file, int level)
 	{
 		genes.at(answer).ExportAllele(file);
 	}
-}
+};
 
 void Chromosome::WriteToFile(std::ofstream &file)
 {
@@ -200,14 +235,10 @@ void Chromosome::WriteToFile(std::ofstream &file)
 			 << genes.at(i).GetExpressedTrait().GetTraitOneName() << ","
 			 << genes.at(i).GetExpressedTrait().GetTraitTwoName() << ","
 			 << genes.at(i).GetAlleleA().GetTraitOneName() << ","
-			 << genes.at(i).GetAlleleA().GetTraitOneType() << ","
 			 << genes.at(i).GetAlleleA().GetTraitTwoName() << ","
-			 << genes.at(i).GetAlleleA().GetTraitTwoType() << ","
 			 << genes.at(i).GetAlleleA().GetNucleotideSequence() << ","
 			 << genes.at(i).GetAlleleB().GetTraitOneName() << ","
-			 << genes.at(i).GetAlleleB().GetTraitOneType() << ","
 			 << genes.at(i).GetAlleleB().GetTraitTwoName() << ","
-			 << genes.at(i).GetAlleleB().GetTraitTwoType() << ","
 			 << genes.at(i).GetAlleleB().GetNucleotideSequence() << endl;
 	}
 	file.close();
@@ -230,11 +261,16 @@ bool Chromosome::RunUnitTest()
 {
 	for (unsigned int i = 0; i < genes.size(); i++)
 	{
-		if (genes.at(i).RunUnitTest())
+		if (!genes.at(i).RunUnitTest())
 		{
 			cout << "Gene " << i + 1 << " failed its test." << endl;
 			return false;
 		}
+	}
+	if (genes.size() == 0)
+	{
+		cout << "Invalid gene count" << endl;
+		return false;
 	}
 	return true;
 };
